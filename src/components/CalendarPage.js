@@ -3,15 +3,15 @@ import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { Grid, Box, Button, Select, MenuItem, Typography, Card, CardContent } from '@mui/material';
+import { Grid, Box, Button, Select, MenuItem, Typography, Card, CardContent, InputLabel, Alert } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import SidebarAdmin from '../components/SidebarAdmin';
 import Navbar from '../components/navbar';
 import dayjs from 'dayjs';
+import SidebarAdmin from './SidebarAdmin';
 
 const theme = createTheme({
   palette: {
@@ -24,14 +24,15 @@ const theme = createTheme({
   },
 });
 
-function CalendarPage() {
+function ClendarPage() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
   const [exerciseType, setExerciseType] = useState('');
-  const [groups, setGroups] = useState('');
+  const [groups, setGroups] = useState([]);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [activities, setActivities] = useState({});
+  const [alertOpen, setAlertOpen] = useState(false); // État pour contrôler l'ouverture de l'alerte
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -43,26 +44,33 @@ function CalendarPage() {
   };
 
   const handleAddEvent = () => {
-    if (exerciseType && groups && startTime && endTime) {
-      const newActivity = {
-        type: exerciseType,
-        groups: groups,
-        startTime: startTime,
-        endTime: endTime
-      };
-      const dateKey = dayjs(selectedDate).format('YYYY-MM-DD');
-      const updatedActivities = {
-        ...activities,
-        [dateKey]: [...(activities[dateKey] || []), newActivity]
-      };
-      setActivities(updatedActivities);
-      setExerciseType('');
-      setGroups('');
-      setStartTime('');
-      setEndTime('');
-      setPopupOpen(false);
+    if (exerciseType && groups.length > 0 && startTime && endTime) {
+      const startTimeObject = dayjs(startTime, 'HH:mm');
+      const endTimeObject = dayjs(endTime, 'HH:mm');
+
+      if (endTimeObject.isAfter(startTimeObject)) {
+        const newActivity = {
+          type: exerciseType,
+          groups: groups.join(', '),
+          startTime: startTime,
+          endTime: endTime
+        };
+        const dateKey = dayjs(selectedDate).format('YYYY-MM-DD');
+        const updatedActivities = {
+          ...activities,
+          [dateKey]: [...(activities[dateKey] || []), newActivity]
+        };
+        setActivities(updatedActivities);
+        setExerciseType('');
+        setGroups([]);
+        setStartTime('');
+        setEndTime('');
+        setPopupOpen(false);
+      } else {
+        setAlertOpen(true); // Ouvrir l'alerte de MUI
+      }
     } else {
-      alert('Veuillez remplir tous les champs obligatoires.');
+      setAlertOpen(true); // Ouvrir l'alerte de MUI
     }
   };
 
@@ -94,7 +102,7 @@ function CalendarPage() {
                     <Typography variant="h6">Activités ajoutées pour {dayjs(selectedDate).format('DD/MM/YYYY')}</Typography>
                     {activities[dayjs(selectedDate).format('YYYY-MM-DD')].map((activity, index) => (
                       <Box key={index} mt={1}>
-                        <Card sx={{ backgroundColor: '#556B2F', width: '100%' }}>
+                        <Card sx={{ backgroundColor: '#556B2F', width: '80%' }}>
                           <CardContent>
                             <Typography sx={{ color: 'white' }}>Type d'exercice: {activity.type}</Typography>
                             <Typography sx={{ color: 'white' }}>Groupes: {activity.groups}</Typography>
@@ -111,32 +119,37 @@ function CalendarPage() {
           </Box>
         </Grid>
       </Grid>
-      <Dialog open={popupOpen} onClose={handlePopupClose}>
+      <Dialog open={popupOpen} onClose={handlePopupClose} maxWidth="sm" fullWidth>
         <DialogTitle>{selectedDate && dayjs(selectedDate).format('DD/MM/YYYY')}</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
+          <InputLabel>Types</InputLabel>
           <Select
             label="Type d'exercice"
             value={exerciseType}
             onChange={(e) => setExerciseType(e.target.value)}
             fullWidth
             margin="normal"
-            sx={{ marginBottom: 2 }} 
+            sx={{ marginBottom: 2 , color:"#4B5320" }} 
+            InputLabelProps={{ style: { color: '#4B5320' } }}
           >
-            <MenuItem value="Type 1">Type 1</MenuItem>
-            <MenuItem value="Type 2">Type 2</MenuItem>
-            <MenuItem value="Type 3">Type 3</MenuItem>
+            <MenuItem value="Type 1" sx={{ color: '#4B5320' }}>Type 1</MenuItem>
+            <MenuItem value="Type 2" sx={{ color: '#4B5320' }}>Type 2</MenuItem>
+            <MenuItem value="Type 3" sx={{ color: '#4B5320' }}>Type 3</MenuItem>
           </Select>
+          <InputLabel>Groupes</InputLabel>
           <Select
             label="Groupes"
             value={groups}
             onChange={(e) => setGroups(e.target.value)}
             fullWidth
+            multiple
             margin="normal"
             sx={{ marginBottom: 2 }} 
+            InputLabelProps={{ style: { color: '#4B5320' } }}
           >
-            <MenuItem value="Groupe 1">Groupe 1</MenuItem>
-            <MenuItem value="Groupe 2">Groupe 2</MenuItem>
-            <MenuItem value="Groupe 3">Groupe 3</MenuItem>
+            <MenuItem value="Groupe 1" sx={{ color: '#4B5320' }}>Groupe 1</MenuItem>
+            <MenuItem value="Groupe 2" sx={{ color: '#4B5320' }}>Groupe 2</MenuItem>
+            <MenuItem value="Groupe 3" sx={{ color: '#4B5320' }}>Groupe 3</MenuItem>
           </Select>
           <TextField
             label="Heure de début"
@@ -168,6 +181,8 @@ function CalendarPage() {
             margin="normal"
             sx={{ marginBottom: 2, width: '100%' }} 
           />
+          {/* Alerte de MUI */}
+          <Alert severity="error" onClose={() => setAlertOpen(false)} open={alertOpen} sx={{ marginBottom: 2 }}>L'heure de fin doit être supérieure à l'heure de début.</Alert>
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={handleAddEvent} sx={{ backgroundColor: '#556B2F', color: 'white' }}>Ajouter</Button>
@@ -178,4 +193,4 @@ function CalendarPage() {
   );
 }
 
-export default CalendarPage;
+export default ClendarPage;

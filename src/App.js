@@ -10,6 +10,7 @@ import CalendarPage from './components/CalendarPage';
 import GroupList from './components/GroupList';
 import PlayerScores from './components/PlayerScores';
 import CalendarPageMon from './components/CalendarPageMon';
+import ShooterDashboard from './pages/ShooterDashboard';
 
 
 
@@ -28,6 +29,7 @@ function App() {
       <Route path='/groupes' element={<GroupList/>}></Route>
       <Route path='/scores' element={<PlayerScores/>}></Route>
       <Route path='/tireurs' element={<TireursPage/>}></Route>
+      <Route exact path='/shooter/:shooterId' element={<ShooterDashboard/>} ></Route>
       <Route path='/organisation-tirs' element={<OrganiserTirs/>}></Route>
       </Routes>
     </Router>

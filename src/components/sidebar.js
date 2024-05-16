@@ -38,7 +38,7 @@ function Sidebar({ onSidebarClick }) {
       }}
     >
       {/* Logo */}
-      <img src={'./Armoiries_Forces_armées_tunisiennes.svg.png'} alt="University Logo" style={{ width: 150, height: 150, marginBottom: '26px',marginTop:"5px" }} />
+      <img src={'../Armoiries_Forces_armées_tunisiennes.svg.png'}  style={{ width: 150, height: 150, marginBottom: '26px',marginTop:"5px" }} />
       <List>
   {['Tableau de bord', 'Tireurs', 'Organisation des tirs','Calendrier', 'Déconnexion'].map((text, index) => (
     <Link to={text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/'} style={{ textDecoration: 'none', color: 'inherit', marginBottom: '8px' }} key={text}>

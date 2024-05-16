@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles'; // Import du ThemeProvider et createTheme
 import {
   Box,
   Button,
@@ -23,13 +24,20 @@ import {
   TableHead,
   TableRow,
   Typography,
-  IconButton, 
+  IconButton,
 } from '@mui/material';
-import { green } from '@mui/material/colors';
-import { Add as AddIcon } from '@mui/icons-material'; 
+import { Add as AddIcon } from '@mui/icons-material';
 import Navbar from '../components/navbar';
 import Sidebar from '../components/sidebar';
 
+// Définition du thème vert militaire
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4B5320', // Vert militaire
+    },
+  },
+});
 
 function ShootingOrder() {
   const initialShooters = [
@@ -49,47 +57,30 @@ function ShootingOrder() {
   const [open, setOpen] = useState(false);
   const [currentShooter, setCurrentShooter] = useState(null);
 
-  // Function to handle group selection 
-  //Cette fonction est appelée lorsqu'il y a un changement dans la sélection d'un groupe.
-  // Elle récupère la nouvelle valeur sélectionnée et la stocke dans un état (selectedGroup)
   const handleGroupChange = (event) => {
     setSelectedGroup(event.target.value);
   };
 
-  //  dialog pour modifier tireurs
-  //Cette fonction ouvre un dialogue ou une boîte de dialogue pour gérer les tireurs.
-  // Elle met à jour l'état pour indiquer que la boîte de dialogue est ouverte (open)
   const handleManageShooters = () => {
     setOpen(true);
   };
 
-  // dialog
-  //Cette fonction ferme la boîte de dialogue. 
   const handleClose = () => {
     setOpen(false);
   };
 
-  // Function to handle selecting shooters from the selected group
-  //Cette fonction est responsable de la sélection des tireurs à partir d'un groupe spécifique. 
-  //Elle filtre les tireurs en fonction du groupe sélectionné puis met à jour l'état pour stocker les tireurs sélectionnés (selectedShooters).
   const handleSelectShooters = () => {
     const selected = shooters.filter(
-      (shooter) => shooter.group === selectedGroup 
+      (shooter) => shooter.group === selectedGroup
     );
     setSelectedShooters(selected);
   };
 
-  // Function to handle editing a shooter
-  //Cette fonction est appelée lorsqu'un utilisateur souhaite éditer les détails d'un tireur spécifique.
-  // Elle reçoit en argument le tireur à éditer, met à jour l'état pour stocker ce tireur actuel (currentShooter), puis ouvre la boîte de dialogue pour l'édition.
   const handleEditShooter = (shooter) => {
     setCurrentShooter(shooter);
     setOpen(true);
   };
 
-  // Function to handle deleting a shooter
-  //Cette fonction est appelée pour supprimer un tireur de la liste. 
-  //Elle filtre la liste des tireurs pour exclure celui avec l'identifiant fourni, puis ferme la boîte de dialogue.
   const handleDeleteShooter = (shooterId) => {
     setShooters((prevShooters) =>
       prevShooters.filter((shooter) => shooter.id !== shooterId)
@@ -97,180 +88,178 @@ function ShootingOrder() {
     handleClose();
   };
 
-  // Function to handle saving the edited shooter
   const handleSaveShooter = () => {
-    //manquante
     handleClose();
   };
 
-  // Function to organize shooting order
   const organizeShootingOrder = () => {
     const shootingOrder = [...selectedShooters];
     shootingOrder.sort(() => Math.random() - 0.5);
     setSelectedShooters(shootingOrder);
   };
 
-  return (
-    <Box>
-       <Navbar />
-      <Sidebar />
-      <div style={{ padding: '10px', marginTop: '10px', textAlign: 'center', marginLeft: '250px' }}>
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Paper elevation={3} style={{ padding: 20 ,display: "flex",
-    justifyContent:"space-between" ,
-    flexWrap: "nowrap",
-    flexDirection: "row"}}>
-          {/* <Typography variant="h5" gutterBottom>
-            Sélection du groupe
-          </Typography> */}
-          <FormControl sx={{ minWidth: 250 }}>
-          <InputLabel id="Group-select-label" sx={{ color: '#4B5320' }}>Groupe</InputLabel>
-            <Select
-              labelId="group-select-label"
-              id="group-select"
-              value={selectedGroup}
-              onChange={handleGroupChange}
-            >
-              <MenuItem value="">Sélectionner un groupe</MenuItem>
-              {Array.from(new Set(shooters.map((shooter) => shooter.group))).map(
-                (group) => (
-                  <MenuItem key={group} value={group}>
-                    {group}
-                  </MenuItem>
-                )
-              )}
-            </Select>
-          </FormControl>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSelectShooters}
-            disabled={!selectedGroup}
-            width="50px"
-            sx={{ bgcolor: "#4B5320", '&:hover': { bgcolor: "#4B5320" } }}
-          >
-            Organiser les tirs
-          </Button>
-          <IconButton
-  onClick={handleManageShooters}
-  disabled={!selectedGroup}
-  sx={{ bgcolor: "#4B5320",color:"white", '&:hover': { bgcolor: "#4B5320" }, width:"50px" , height:"50px"}} 
->
-  <AddIcon />
-</IconButton>
+  const handleViewShooterDetails = (shooterId) => {
+    // Rediriger vers une autre page pour visualiser les tirs et enregistrer les notes
+    window.location.href = `/shooter/${shooterId}`;
+  };
 
-        </Paper>
-      </Grid>
-      {selectedShooters.length > 0 && (
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: 20 }}>
-            <Typography variant="h5" gutterBottom>
-              Liste des tireurs du groupe "{selectedGroup}"
-            </Typography>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>#</TableCell>
-                    <TableCell>Prénom</TableCell>
-                    <TableCell>Nom</TableCell>
-                    <TableCell>Grade</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {selectedShooters.map((shooter, index) => (
-                    <TableRow key={shooter.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{shooter.firstName}</TableCell>
-                      <TableCell>{shooter.lastName}</TableCell>
-                      <TableCell>{shooter.grade}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={() => handleEditShooter(shooter)}
-                        >
-                          Modifier
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Grid>
-      )}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          {  'Ajouter un nouveau tireur'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {
-               'Modifiez les détails du tireur'}
-          </DialogContentText>
-          <FormGroup>
-            <FormControl margin="normal">
-              <InputLabel>Prénom</InputLabel>
-              <Input
-                value={''}
-                onChange={(e) =>
-                  setCurrentShooter({
-                    ...currentShooter,
-                    firstName: e.target.value,
-                  })
-                }
-              />
-            </FormControl>
-            <FormControl margin="normal">
-              <InputLabel>Nom</InputLabel>
-              <Input
-                value={''}
-                onChange={(e) =>
-                  setCurrentShooter({
-                    ...currentShooter,
-                    lastName: e.target.value,
-                  })
-                }
-              />
-            </FormControl>
-            <FormControl margin="normal">
-              <InputLabel>Grade</InputLabel>
-              <Input
-                value={''}
-                onChange={(e) =>
-                  setCurrentShooter({
-                    ...currentShooter,
-                    grade: e.target.value,
-                  })
-                }
-              />
-            </FormControl>
-          </FormGroup>
-        </DialogContent>
-        <DialogActions>
-          {currentShooter && (
-            <Button
-              onClick={() => handleDeleteShooter(currentShooter.id)}
-              color="secondary"
-            >
-              Supprimer
-            </Button>
-          )}
-          <Button onClick={handleClose} color="primary">
-            Annuler
-          </Button>
-          <Button onClick={handleSaveShooter} color="primary" >
-            Enregistrer
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Grid>
-    </div>
-    </Box>
+  return (
+    <ThemeProvider theme={theme}> 
+      <Box>
+        <Navbar />
+        <Sidebar />
+        <div style={{ padding: '10px', marginTop: '10px', textAlign: 'center', marginLeft: '250px' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Paper elevation={3} style={{ padding: 20, display: "flex", justifyContent: "space-between", flexWrap: "nowrap", flexDirection: "row" }}>
+                <FormControl sx={{ minWidth: 250 }}>
+                  <InputLabel id="Group-select-label" sx={{ color: 'white' }}>Groupe</InputLabel>
+                  <Select
+                    labelId="group-select-label"
+                    id="group-select"
+                    value={selectedGroup}
+                    onChange={handleGroupChange}
+                  >
+                    <MenuItem value="">Sélectionner un groupe</MenuItem>
+                    {Array.from(new Set(shooters.map((shooter) => shooter.group))).map(
+                      (group) => (
+                        <MenuItem key={group} value={group}>
+                          {group}
+                        </MenuItem>
+                      )
+                    )}
+                  </Select>
+                </FormControl>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSelectShooters}
+                  disabled={!selectedGroup}
+                  sx={{ bgcolor: "#4B5320"}}
+                >
+                  Organiser les tirs
+                </Button>
+                <IconButton
+                  onClick={handleManageShooters}
+                  disabled={!selectedGroup}
+                  sx={{ bgcolor: "#4B5320", color: "white",  width: "50px", height: "50px" }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Paper>
+            </Grid>
+            {selectedShooters.length > 0 && (
+              <Grid item xs={12}>
+                <Paper elevation={3} style={{ padding: 20 }}>
+                  <Typography variant="h5" gutterBottom style={{ color: '#4B5320' }}>
+                    Liste des tireurs du groupe "{selectedGroup}"
+                  </Typography>
+                  <TableContainer>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>#</TableCell>
+                          <TableCell>Prénom</TableCell>
+                          <TableCell>Nom</TableCell>
+                          <TableCell>Grade</TableCell>
+                          <TableCell>Action</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {selectedShooters.map((shooter, index) => (
+                          <TableRow key={shooter.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{shooter.firstName}</TableCell>
+                            <TableCell>{shooter.lastName}</TableCell>
+                            <TableCell>{shooter.grade}</TableCell>
+                            <TableCell>
+                              {/* Remplacement du bouton "Modifier" par un bouton pour visualiser les détails */}
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => handleViewShooterDetails(shooter.id)}
+                                style={{ color: '#4B5320', borderColor: '#4B5320' }}
+                              >
+                                Visualiser les détails
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+              </Grid>
+            )}
+            <Dialog open={open} onClose={handleClose}>
+              <DialogTitle style={{  color: '#4B5320' }}>
+                {currentShooter ? 'Modifier un tireur' : 'Ajouter un nouveau tireur'}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  {currentShooter ? 'Modifiez les détails du tireur' : 'Saisissez les détails du nouveau tireur'}
+                </DialogContentText>
+                <FormGroup>
+                  <FormControl margin="normal">
+                    <InputLabel style={{ color: '#4B5320' }}>Prénom</InputLabel>
+                    <Input
+                      value={''}
+                      onChange={(e) =>
+                        setCurrentShooter({
+                          ...currentShooter,
+                          firstName: e.target.value,
+                        })
+                      }
+                    />
+                  </FormControl>
+                  <FormControl margin="normal">
+                    <InputLabel style={{ color: '#4B5320' }}>Nom</InputLabel>
+                    <Input
+                      value={''}
+                      onChange={(e) =>
+                        setCurrentShooter({
+                          ...currentShooter,
+                          lastName: e.target.value,
+                        })
+                      }
+                    />
+                  </FormControl>
+                  <FormControl margin="normal">
+                    <InputLabel style={{ color: '#4B5320' }}>Grade</InputLabel>
+                    <Input
+                      value={''}
+                      onChange={(e) =>
+                        setCurrentShooter({
+                          ...currentShooter,
+                          grade: e.target.value,
+                        })
+                      }
+                    />
+                  </FormControl>
+                </FormGroup>
+              </DialogContent>
+              <DialogActions>
+                {currentShooter && (
+                  <Button
+                    onClick={() => handleDeleteShooter(currentShooter.id)}
+                    color="secondary"
+                    style={{ color: '#4B5320' }}
+                  >
+                    Supprimer
+                  </Button>
+                )}
+                <Button onClick={handleClose} color="primary" style={{ color: '#4B5320' }}>
+                  Annuler
+                </Button>
+                <Button onClick={handleSaveShooter} color="primary" style={{ color: '#4B5320' }}>
+                  Enregistrer
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Grid>
+        </div>
+      </Box>
+    </ThemeProvider>
   );
 }
 
