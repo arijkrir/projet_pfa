@@ -11,10 +11,19 @@ import GroupList from './components/GroupList';
 import PlayerScores from './components/PlayerScores';
 import CalendarPageMon from './components/CalendarPageMon';
 import ShooterDashboard from './pages/ShooterDashboard';
+import React, { useEffect, useState } from 'react';
+
 
 
 
 function App() {
+  // const [message, setMessage] = useState('');
+
+  // useEffect(() => {
+  //   fetch('/api')
+  //     .then(response => response.json())
+  //     .then(data => setMessage(data.message));
+  // }, []);
   return (
     <div>
       <Router>

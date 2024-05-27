@@ -45,7 +45,7 @@ function SidebarAdmin({ onSidebarClick }) {
       }}
     >
       {/* Logo */}
-      <img src={'./Armoiries_Forces_armées_tunisiennes.svg.png'} alt="University Logo" style={{ width: 150, height: 150, marginBottom: '26px', marginTop: "5px" }} />
+      <img src={'./Armoiries_Forces_armées_tunisiennes.svg.png'}  style={{ width: 150, height: 150, marginBottom: '26px', marginTop: "5px" }} />
       <List>
         <Link to="/DashboardAdmin" style={{ textDecoration: 'none', color: 'inherit', marginBottom: '8px' }}>
           <ListItem

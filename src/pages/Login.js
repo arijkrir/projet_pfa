@@ -1,10 +1,10 @@
+// frontend/src/Login.js
 import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link'; 
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -22,31 +22,45 @@ const theme = createTheme({
 
 export default function Login() {
     const [role, setRole] = useState('');
+    const [error, setError] = useState('');
 
     const handleRoleChange = (event) => {
         setRole(event.target.value);
     };
 
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      const data = new FormData(event.currentTarget);
-      const username = data.get('username');
-      const password = data.get('password');
-      
-      if (role === 'Moniteur') {
-        console.log({ username, password, role });
-        window.location.href = "/dashboard";
-      } else if (role === 'Administrateur') {
-        console.log({ username, password, role });
-        window.location.href = "/DashboardAdmin";
-      } else {
-        console.error("Rôle non valide !");
-      }
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const username = data.get('username');
+        const password = data.get('password');
+        const role = data.get('role');
+
+        
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password,role })
+            });
+            const result = await response.json();
+
+            if (response.ok) {
+                if (result.role === 'Moniteur') {
+                    window.location.href = "/dashboard";
+                } else if (result.role === 'Administrateur') {
+                    window.location.href = "/DashboardAdmin";
+                }
+            } else {
+                setError(result.message);
+            }
+        } catch (error) {
+            setError('An error occurred. Please try again.');
+        }
     };
-  
+
     return (
       <ThemeProvider theme={theme}>
-        <Grid container component="main" >
+        <Grid container component="main">
           <Grid
             item
             xs={false}
@@ -60,10 +74,10 @@ export default function Login() {
               backgroundPosition: 'center',
             }}
           />
-          <Grid item xs={13} sm={9} md={5} component={Paper} elevation={8} square>
+          <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
             <Box
               sx={{
-                my: 10.5,
+                my: 11,
                 mx: 4,
                 display: 'flex',
                 flexDirection: 'column',
@@ -112,7 +126,7 @@ export default function Login() {
                 >
                   Se connecter
                 </Button>
-                  Mot de passe oublier? 
+                {error && <Typography color="error">{error}</Typography>}
               </Box>
             </Box>
           </Grid>

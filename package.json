@@ -2,6 +2,7 @@
   "name": "projet_pfa",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@blueprintjs/core": "^5.10.2",
     "@blueprintjs/icons": "^5.9.0",
@@ -19,6 +20,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.1.8",
     "moment": "^2.30.1",
