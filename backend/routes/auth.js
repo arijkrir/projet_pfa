@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const password1 = 'moniteur';
-const password2 = 'admin';
+const password2 = 'adminyassine';
 const salt = bcrypt.genSaltSync(10);
 const hashedPassword1 = bcrypt.hashSync(password1, salt);
 const hashedPassword2 = bcrypt.hashSync(password2, salt);
@@ -15,7 +15,7 @@ const users = [
     role: 'Moniteur',
   },
   {
-    username: 'admin',
+    username: 'yassine',
     password: hashedPassword2, 
     role: 'Administrateur',
   }
