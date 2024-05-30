@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, Paper, Table, TableBody, TableCell, InputLabel, TableContainer, TableHead, TableRow, TextField, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, FormControl, ThemeProvider } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'; 
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,7 +9,7 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4B5320',
+      main: '#4B5320', 
     },
   },
 });
@@ -34,6 +33,20 @@ const TireursPage = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editTireur, setEditTireur] = useState(null);
 
+  useEffect(() => {
+    const fetchTireurs = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/tireurs');
+        const data = await response.json();
+        setTireurs(data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des tireurs', error);
+      }
+    };
+
+    fetchTireurs();
+  }, []);
+
   const openDeleteDialog = (id) => {
     setDeleteId(id);
     setDeleteDialogOpen(true);
@@ -44,46 +57,96 @@ const TireursPage = () => {
     setDeleteDialogOpen(false);
   };
 
-  const confirmDeleteTireur = () => {
+  const confirmDeleteTireur = async () => {
     if (deleteId !== null) {
-      const nouveauListeTireurs = tireurs.filter((tireur) => tireur._id !== deleteId);
-      setTireurs(nouveauListeTireurs);
-      closeDeleteDialog();
+      try {
+        const response = await fetch(`http://localhost:5000/api/tireurs/supprimer/${deleteId}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          const nouveauListeTireurs = tireurs.filter((tireur) => tireur._id !== deleteId);
+          setTireurs(nouveauListeTireurs);
+          closeDeleteDialog();
+        } else {
+          console.error('Erreur lors de la suppression du tireur', response.statusText);
+          alert('Erreur lors de la suppression du tireur');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la suppression du tireur', error);
+        alert('Erreur lors de la suppression du tireur');
+      }
     }
   };
+  
 
   const openEditDialog = (tireur) => {
     setEditTireur(tireur);
     setEditDialogOpen(true);
-  };
+  };  
 
   const closeEditDialog = () => {
     setEditTireur(null);
     setEditDialogOpen(false);
   };
 
-  const confirmEditTireur = () => {
-    closeEditDialog();
+  const confirmEditTireur = async () => {
+    if (editTireur) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/tireurs/modifier/${editTireur._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(editTireur),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const updatedTireurs = tireurs.map((tireur) =>
+            tireur._id === data._id ? data : tireur
+          );
+          setTireurs(updatedTireurs);
+          closeEditDialog();
+        } else {
+          console.error('Erreur lors de la modification du tireur', response.statusText);
+          alert('Erreur lors de la modification du tireur');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la modification du tireur', error);
+        alert('Erreur lors de la modification du tireur');
+      }
+    }
   };
+  
 
   const ajouterTireur = async () => {
     if (nouveauNom && nouveauPrenom && nouveauGrade) {
+      const nouveauTireur = {
+        nom: nouveauNom,
+        prenom: nouveauPrenom,
+        grade: nouveauGrade,
+        nombreTirs: 0
+      };
       try {
-        const nouveauTireur = {
-          nom: nouveauNom,
-          prenom: nouveauPrenom,
-          grade: nouveauGrade,
-          nombreTirs: 0,
-        };
-        const response = await axios.post('http://localhost:5000/api/tireurs/ajouter', nouveauTireur);
-        console.log('Réponse du serveur:', response.data);  // Log la réponse du serveur
-        setTireurs([...tireurs, response.data]);
-        toggleModal();
-        setNouveauNom('');
-        setNouveauPrenom('');
-        setNouveauGrade('');
+        const response = await fetch('http://localhost:5000/api/tireurs/ajouter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(nouveauTireur)
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setTireurs([...tireurs, data]);
+          toggleModal();
+          setNouveauNom('');
+          setNouveauPrenom('');
+          setNouveauGrade('');
+        } else {
+          console.error('Erreur lors de l\'ajout du tireur', response.statusText);
+          alert('Erreur lors de l\'ajout du tireur');
+        }
       } catch (error) {
-        console.error('Erreur lors de l\'ajout du tireur', error.response || error);  // Log l'erreur avec plus de détails
+        console.error('Erreur lors de l\'ajout du tireur', error);
         alert('Erreur lors de l\'ajout du tireur');
       }
     } else {
@@ -162,59 +225,10 @@ const TireursPage = () => {
               </Select>
               <div style={{ textAlign: 'center' }}>
                 <Button color="primary" onClick={ajouterTireur} style={{ backgroundColor: '#4B5320', color: 'white', marginRight: '10px' }}>Ajouter</Button>
-                <Button onClick={toggleModal} style={{ backgroundColor: '#4B5320', color: 'white' }}>Annuler</Button>
+                <Button onClick={toggleModal} color="secondary">Annuler</Button>
               </div>
             </div>
           </Modal>
-
-          <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog}>
-            <DialogTitle>Confirmer la suppression</DialogTitle>
-            <DialogContent>
-              Êtes-vous sûr de vouloir supprimer ce tireur ?
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeDeleteDialog}>Annuler</Button>
-              <Button onClick={confirmDeleteTireur} style={{ color: 'red' }}>Supprimer</Button>
-            </DialogActions>
-          </Dialog>
-
-          <Dialog open={editDialogOpen} onClose={closeEditDialog}>
-            <DialogTitle>Modifier le tireur</DialogTitle>
-            <DialogContent>
-              <TextField 
-                label="Nom" 
-                value={editTireur ? editTireur.nom : ''} 
-                onChange={(e) => setEditTireur({...editTireur, nom: e.target.value})} 
-                fullWidth 
-                required 
-                style={{ marginBottom: '10px' }}
-              />
-              <TextField 
-                label="Prénom" 
-                value={editTireur ? editTireur.prenom : ''} 
-                onChange={(e) => setEditTireur({...editTireur, prenom: e.target.value})} 
-                fullWidth 
-                required 
-                style={{ marginBottom: '10px' }}
-              />
-              <Select
-                label="Grade"
-                value={editTireur ? editTireur.grade : ''}
-                onChange={(e) => setEditTireur({...editTireur, grade: e.target.value})}
-                fullWidth
-                required
-                style={{ marginBottom: '20px' }}
-              >
-                {grades.map((grade, index) => (
-                  <MenuItem key={index} value={grade}>{grade}</MenuItem>
-                ))}
-              </Select>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeEditDialog}>Annuler</Button>
-              <Button onClick={confirmEditTireur} style={{ color: '#4B5320' }}>Enregistrer</Button>
-            </DialogActions>
-          </Dialog>
 
           <TableContainer component={Paper}>
             <Table>
@@ -224,29 +238,84 @@ const TireursPage = () => {
                   <TableCell>Prénom</TableCell>
                   <TableCell>Grade</TableCell>
                   <TableCell>Nombre de tirs</TableCell>
-                  <TableCell></TableCell> 
+                  <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredTireurs.map((tireur) => (
-                  <TableRow key={tireur._id}>
-                    <TableCell>{tireur.nom}</TableCell>
-                    <TableCell>{tireur.prenom}</TableCell>
-                    <TableCell>{tireur.grade}</TableCell>
-                    <TableCell>{tireur.nombreTirs}</TableCell>
-                    <TableCell align="right">
-                      <IconButton onClick={() => openEditDialog(tireur)} style={{ marginRight: '10px' }}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => openDeleteDialog(tireur._id)}>
-                        <DeleteIcon style={{ color: 'red' }} />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+  {filteredTireurs.map((tireur) => (
+    <TableRow key={tireur._id}>
+      <TableCell>{tireur.nom}</TableCell>
+      <TableCell>{tireur.prenom}</TableCell>
+      <TableCell>{tireur.grade}</TableCell>
+      <TableCell>{tireur.nombreTirs}</TableCell>
+      <TableCell>
+        <IconButton onClick={() => openEditDialog(tireur)}><EditIcon /></IconButton>
+        <IconButton onClick={() => openDeleteDialog(tireur._id)}><DeleteIcon /></IconButton>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
             </Table>
           </TableContainer>
+
+          <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog}>
+            <DialogTitle>Confirmer la suppression</DialogTitle>
+            <DialogContent>Voulez-vous vraiment supprimer ce tireur ?</DialogContent>
+            <DialogActions>
+              <Button onClick={closeDeleteDialog} color="primary">Annuler</Button>
+              <Button onClick={confirmDeleteTireur} color="secondary">Supprimer</Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog open={editDialogOpen} onClose={closeEditDialog}>
+  <DialogTitle>Modifier le tireur</DialogTitle>
+  <DialogContent>
+    <TextField
+      label="Nom"
+      value={editTireur?.nom || ''}
+      onChange={(e) => setEditTireur({ ...editTireur, nom: e.target.value })}
+      fullWidth
+      required
+      style={{ marginBottom: '10px' }}
+    />
+    <TextField
+      label="Prénom"
+      value={editTireur?.prenom || ''}
+      onChange={(e) => setEditTireur({ ...editTireur, prenom: e.target.value })}
+      fullWidth
+      required
+      style={{ marginBottom: '10px' }}
+    />
+    <Select
+      label="Grade"
+      value={editTireur?.grade || ''}
+      onChange={(e) => setEditTireur({ ...editTireur, grade: e.target.value })}
+      fullWidth
+      required
+      style={{ marginBottom: '20px' }}
+    >
+      {grades.map((grade, index) => (
+        <MenuItem key={index} value={grade}>{grade}</MenuItem>
+      ))}
+    </Select>
+    <TextField
+  label="Nombre de tirs"
+  value={editTireur?.nombreTirs || ''}
+  onChange={(e) => setEditTireur({ ...editTireur, nombreTirs: e.target.value })}
+  fullWidth
+  required
+  type="number" 
+  style={{ marginBottom: '10px' }}
+/>
+
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={closeEditDialog} color="primary">Annuler</Button>
+    <Button onClick={confirmEditTireur} color="secondary">Modifier</Button>
+  </DialogActions>
+</Dialog>
+
         </div>
       </div>
     </ThemeProvider>

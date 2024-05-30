@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -12,6 +12,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Navbar from '../components/navbar';
 import dayjs from 'dayjs';
 import Sidebar from '../components/sidebar';
+import axios from 'axios';
 
 const theme = createTheme({
   palette: {
@@ -32,18 +33,27 @@ function ClendarPageMon() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [activities, setActivities] = useState({});
-  const [alertOpen, setAlertOpen] = useState(false); // État pour contrôler l'ouverture de l'alerte
+  const [alertOpen, setAlertOpen] = useState(false); 
 
-  const handleDateChange = (date) => {
+  const handleDateChange = async (date) => {
     setSelectedDate(date);
     setPopupOpen(true);
+    if (date) {
+      const formattedDate = dayjs(date).format('YYYY-MM-DD');
+      try {
+        const response = await axios.get(`http://localhost:5000/api/seances/${formattedDate}`);
+        setActivities({ [formattedDate]: response.data });
+      } catch (error) {
+        console.error('Erreur lors de la récupération des séances:', error);
+      }
+    }
   };
 
   const handlePopupClose = () => {
     setPopupOpen(false);
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
     if (exerciseType && groups.length > 0 && startTime && endTime) {
       const startTimeObject = dayjs(startTime, 'HH:mm');
       const endTimeObject = dayjs(endTime, 'HH:mm');
@@ -51,26 +61,28 @@ function ClendarPageMon() {
       if (endTimeObject.isAfter(startTimeObject)) {
         const newActivity = {
           type: exerciseType,
-          groups: groups.join(', '),
-          startTime: startTime,
-          endTime: endTime
+          groups,
+          startTime,
+          endTime,
+          date: dayjs(selectedDate).format('YYYY-MM-DD')
         };
-        const dateKey = dayjs(selectedDate).format('YYYY-MM-DD');
-        const updatedActivities = {
-          ...activities,
-          [dateKey]: [...(activities[dateKey] || []), newActivity]
-        };
-        setActivities(updatedActivities);
-        setExerciseType('');
-        setGroups([]);
-        setStartTime('');
-        setEndTime('');
-        setPopupOpen(false);
+
+        try {
+          await axios.post('http://localhost:5000/api/seances', newActivity);
+          setExerciseType('');
+          setGroups([]);
+          setStartTime('');
+          setEndTime('');
+          setPopupOpen(false);
+          handleDateChange(selectedDate); // Refresh activities after adding a new one
+        } catch (error) {
+          console.error('Erreur lors de l\'ajout de la séance:', error);
+        }
       } else {
-        setAlertOpen(true); // Ouvrir l'alerte de MUI
+        setAlertOpen(true); 
       }
     } else {
-      setAlertOpen(true); // Ouvrir l'alerte de MUI
+      setAlertOpen(true); 
     }
   };
 
@@ -105,7 +117,7 @@ function ClendarPageMon() {
                         <Card sx={{ backgroundColor: '#556B2F', width: '80%' }}>
                           <CardContent>
                             <Typography sx={{ color: 'white' }}>Type d'exercice: {activity.type}</Typography>
-                            <Typography sx={{ color: 'white' }}>Groupes: {activity.groups}</Typography>
+                            <Typography sx={{ color: 'white' }}>Groupes: {activity.groups.join(', ')}</Typography>
                             <Typography sx={{ color: 'white' }}>Heure de début: {activity.startTime}</Typography>
                             <Typography sx={{ color: 'white' }}>Heure de fin: {activity.endTime}</Typography>
                           </CardContent>

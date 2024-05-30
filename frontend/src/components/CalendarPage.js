@@ -12,6 +12,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Navbar from '../components/navbar';
 import dayjs from 'dayjs';
 import SidebarAdmin from './SidebarAdmin';
+import axios from 'axios';
 
 const theme = createTheme({
   palette: {
@@ -32,18 +33,26 @@ function ClendarPage() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [activities, setActivities] = useState({});
-  const [alertOpen, setAlertOpen] = useState(false); // État pour contrôler l'ouverture de l'alerte
+  const [alertOpen, setAlertOpen] = useState(false); 
 
-  const handleDateChange = (date) => {
+  const handleDateChange = async (date) => {
     setSelectedDate(date);
     setPopupOpen(true);
+    if (date) {
+      const formattedDate = dayjs(date).format('YYYY-MM-DD');
+      try {
+        const response = await axios.get(`http://localhost:5000/api/seances/${formattedDate}`);
+        setActivities({ [formattedDate]: response.data });
+      } catch (error) {
+        console.error('Erreur lors de la récupération des séances:', error);
+      }
+    }
   };
-
   const handlePopupClose = () => {
     setPopupOpen(false);
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
     if (exerciseType && groups.length > 0 && startTime && endTime) {
       const startTimeObject = dayjs(startTime, 'HH:mm');
       const endTimeObject = dayjs(endTime, 'HH:mm');
@@ -51,28 +60,32 @@ function ClendarPage() {
       if (endTimeObject.isAfter(startTimeObject)) {
         const newActivity = {
           type: exerciseType,
-          groups: groups.join(', '),
-          startTime: startTime,
-          endTime: endTime
+          groups,
+          startTime,
+          endTime,
+          date: dayjs(selectedDate).format('YYYY-MM-DD')
         };
-        const dateKey = dayjs(selectedDate).format('YYYY-MM-DD');
-        const updatedActivities = {
-          ...activities,
-          [dateKey]: [...(activities[dateKey] || []), newActivity]
-        };
-        setActivities(updatedActivities);
-        setExerciseType('');
-        setGroups([]);
-        setStartTime('');
-        setEndTime('');
-        setPopupOpen(false);
+
+        try {
+          await axios.post('http://localhost:5000/api/seances', newActivity);
+          setExerciseType('');
+          setGroups([]);
+          setStartTime('');
+          setEndTime('');
+          setPopupOpen(false);
+          handleDateChange(selectedDate); // Refresh activities after adding a new one
+        } catch (error) {
+          console.error('Erreur lors de l\'ajout de la séance:', error);
+        }
       } else {
-        setAlertOpen(true); // Ouvrir l'alerte de MUI
+        setAlertOpen(true); 
       }
     } else {
-      setAlertOpen(true); // Ouvrir l'alerte de MUI
+      setAlertOpen(true); 
     }
   };
+
+
 
   return (
     <ThemeProvider theme={theme}>
