@@ -90,7 +90,7 @@ const handleCommentOpen = (player) => {
   ];
 
   return (
-    <ThemeProvider theme={theme}> {/* Utilisez ThemeProvider avec le thème personnalisé */}
+    <ThemeProvider theme={theme}> 
       <div>
         <SidebarAdmin />
         <Navbar />
@@ -121,7 +121,7 @@ const handleCommentOpen = (player) => {
                   <TableCell align="center">Nom</TableCell>
                   <TableCell align="center">Points pour cible</TableCell>
                   <TableCell align="center">Points de précision</TableCell>
-                  <TableCell align="center">Autres points</TableCell>
+                  <TableCell align="center">Points de groupement</TableCell>
                   <TableCell align="center">Total des points</TableCell>
                   <TableCell align="center">Groupe</TableCell>
                   <TableCell align="center">Commentaire</TableCell>

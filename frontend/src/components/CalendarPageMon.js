@@ -144,9 +144,10 @@ function ClendarPageMon() {
             sx={{ marginBottom: 2 , color:"#4B5320" }} 
             InputLabelProps={{ style: { color: '#4B5320' } }}
           >
-            <MenuItem value="Type 1" sx={{ color: '#4B5320' }}>Type 1</MenuItem>
-            <MenuItem value="Type 2" sx={{ color: '#4B5320' }}>Type 2</MenuItem>
-            <MenuItem value="Type 3" sx={{ color: '#4B5320' }}>Type 3</MenuItem>
+            <MenuItem value="50 m" sx={{ color: '#4B5320' }}>50 m</MenuItem>
+            <MenuItem value="100 m" sx={{ color: '#4B5320' }}>100 m</MenuItem>
+            <MenuItem value="200 m" sx={{ color: '#4B5320' }}>200 m</MenuItem>
+            <MenuItem value="300 m" sx={{ color: '#4B5320' }}>300 m</MenuItem>
           </Select>
           <InputLabel>Groupes</InputLabel>
           <Select
@@ -162,6 +163,7 @@ function ClendarPageMon() {
             <MenuItem value="Groupe 1" sx={{ color: '#4B5320' }}>Groupe 1</MenuItem>
             <MenuItem value="Groupe 2" sx={{ color: '#4B5320' }}>Groupe 2</MenuItem>
             <MenuItem value="Groupe 3" sx={{ color: '#4B5320' }}>Groupe 3</MenuItem>
+            <MenuItem value="Groupe 4" sx={{ color: '#4B5320' }}>Groupe 4</MenuItem>
           </Select>
           <TextField
             label="Heure de début"

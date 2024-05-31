@@ -7,25 +7,24 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 const drawerWidth = 240;
 
 const data = [
-  { week: '2024-04-22', tirs: 2 }, 
-  { week: '2024-04-29', tirs: 5 }, 
-  { week: '2024-05-06', tirs: 3 }, 
-  { week: '2024-05-13', tirs: 4 }, 
+  { week: '2024-05-27', Seances: 2 }, 
+  { week: '2024-06-06', Seances: 5 }, 
+  { week: '2024-06-13', Seances: 3 }, 
+  { week: '2024-06-20', Seances: 4 }, 
 ];
 
 const activitiesData = [
-  { week: '2024-05-01', type: 'Tir', groups: '1, 3', startTime: '08:00', endTime: '12:00' },
-  { week: '2024-05-01', type: 'Tir', groups: '5, 4', startTime: '13:00', endTime: '17:00' },
-  { week: '2024-05-06', type: 'Tir', groups: '2, 6', startTime: '09:00', endTime: '11:00' },
-  { week: '2024-05-06', type: 'Tir', groups: '1, 5', startTime: '14:00', endTime: '16:00' },
-  // Ajoutez d'autres données d'activité avec les dates de début de semaine correspondantes
+  { week: '2024-06-06', type: '50m', groups: '1, 3', startTime: '08:00', endTime: '12:00' },
+  { week: '2024-06-06', type: '300m', groups: '5, 4', startTime: '14:00', endTime: '18:00' },
+  { week: '2024-06-06', type: '50m', groups: '2, 3', startTime: '08:00', endTime: '12:00' },
+  { week: '2024-06-06', type: '100m', groups: '1, 5', startTime: '14:00', endTime: '18:00' },
 ];
 
 const DashboardAdmin = () => {
   // Obtenir la date actuelle
   const currentDate = new Date();
   
-  const [selectedWeek, setSelectedWeek] = useState('2024-05-06'); 
+  const [selectedWeek, setSelectedWeek] = useState('2024-06-06'); 
 
   const handleWeekChange = (event) => {
     setSelectedWeek(event.target.value);
@@ -34,10 +33,11 @@ const DashboardAdmin = () => {
   const weekActivities = activitiesData.filter(activity => activity.week === selectedWeek);
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div>
       <SidebarAdmin />
-      <div style={{ width: `calc(100% - ${drawerWidth}px)`, marginLeft: `${drawerWidth}px` }}>
-        <Navbar />
+      <Navbar />
+      <div style={{ marginLeft: '270px', maxWidth: '950px' }}>
+        <div style={{ display: 'flex' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div style={{ width: '50%', padding: '20px' }}>
             <h2>Activité par Semaine</h2>
@@ -48,7 +48,7 @@ const DashboardAdmin = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="tirs" stroke="#556B2F" />
+                <Line type="monotone" dataKey="Seances" stroke="#556B2F" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -79,6 +79,7 @@ const DashboardAdmin = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

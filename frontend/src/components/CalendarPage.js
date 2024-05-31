@@ -73,7 +73,7 @@ function ClendarPage() {
           setStartTime('');
           setEndTime('');
           setPopupOpen(false);
-          handleDateChange(selectedDate); // Refresh activities after adding a new one
+          handleDateChange(selectedDate); 
         } catch (error) {
           console.error('Erreur lors de l\'ajout de la séance:', error);
         }
@@ -118,7 +118,7 @@ function ClendarPage() {
                         <Card sx={{ backgroundColor: '#556B2F', width: '80%' }}>
                           <CardContent>
                             <Typography sx={{ color: 'white' }}>Type d'exercice: {activity.type}</Typography>
-                            <Typography sx={{ color: 'white' }}>Groupes: {activity.groups}</Typography>
+                            <Typography sx={{ color: 'white' }}>Groupes: {activity.groups.join(', ')}</Typography>
                             <Typography sx={{ color: 'white' }}>Heure de début: {activity.startTime}</Typography>
                             <Typography sx={{ color: 'white' }}>Heure de fin: {activity.endTime}</Typography>
                           </CardContent>
@@ -145,9 +145,10 @@ function ClendarPage() {
             sx={{ marginBottom: 2 , color:"#4B5320" }} 
             InputLabelProps={{ style: { color: '#4B5320' } }}
           >
-            <MenuItem value="Type 1" sx={{ color: '#4B5320' }}>Type 1</MenuItem>
-            <MenuItem value="Type 2" sx={{ color: '#4B5320' }}>Type 2</MenuItem>
-            <MenuItem value="Type 3" sx={{ color: '#4B5320' }}>Type 3</MenuItem>
+            <MenuItem value="50 m" sx={{ color: '#4B5320' }}>50 m</MenuItem>
+            <MenuItem value="100 m" sx={{ color: '#4B5320' }}>100 m</MenuItem>
+            <MenuItem value="200 m" sx={{ color: '#4B5320' }}>200 m</MenuItem>
+            <MenuItem value="300 m" sx={{ color: '#4B5320' }}>300 m</MenuItem>
           </Select>
           <InputLabel>Groupes</InputLabel>
           <Select
@@ -163,6 +164,7 @@ function ClendarPage() {
             <MenuItem value="Groupe 1" sx={{ color: '#4B5320' }}>Groupe 1</MenuItem>
             <MenuItem value="Groupe 2" sx={{ color: '#4B5320' }}>Groupe 2</MenuItem>
             <MenuItem value="Groupe 3" sx={{ color: '#4B5320' }}>Groupe 3</MenuItem>
+            <MenuItem value="Groupe 4" sx={{ color: '#4B5320' }}>Groupe 4</MenuItem>
           </Select>
           <TextField
             label="Heure de début"

@@ -10,6 +10,7 @@ import EventIcon from '@mui/icons-material/Event';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Box from '@mui/material/Box';
 
+
 function Sidebar({ onSidebarClick }) {
   const [selectedItem, setSelectedItem] = React.useState(window.location.pathname);
 
@@ -38,30 +39,30 @@ function Sidebar({ onSidebarClick }) {
       }}
     >
       {/* Logo */}
-      <img src={'./Armoiries_Forces_armées_tunisiennes.svg.png'} style={{ width: 150, height: 150, marginBottom: '26px', marginTop: "5px" }} />
+      <img src={'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Armoiries_Forces_arm%C3%A9es_tunisiennes.svg/640px-Armoiries_Forces_arm%C3%A9es_tunisiennes.svg.png'} style={{ width: 150, height: 150, marginBottom: '26px', marginTop: "5px" }} />
       <List>
-  {['Tableau de bord', 'Tireurs', 'Organisation des tirs','Calendrier', 'Déconnexion'].map((text, index) => (
-    <Link to={text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/'} style={{ textDecoration: 'none', color: 'inherit', marginBottom: '8px' }} key={text}>
-      <ListItem
-        button
-        sx={{
-          bgcolor: selectedItem === (text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/') ? '#4B5320' : 'background.paper',
-        }}
-        onClick={() => handleItemClick(text)}
-        style={{ marginBottom: '15px' }} 
-      >
-        <ListItemIcon sx={{ color: selectedItem === (text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/') ? 'primary.contrastText' : 'inherit' }}>
-          {text === 'Tableau de bord' && <DashboardIcon />}
-          {text === 'Tireurs' && <PeopleAltIcon />}
-          {text === 'Organisation des tirs' && <EventIcon />}
-          {text === 'Calendrier' && <EventIcon />}
-          {text === 'Déconnexion' && <LogoutIcon />}
-        </ListItemIcon>
-        <ListItemText primary={text} sx={{ color: selectedItem === (text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/') ? 'primary.contrastText' : 'inherit' }} />
-      </ListItem>
-    </Link>
-  ))}
-</List>
+        {['Tableau de bord', 'Tireurs', 'Organisation des tirs','Calendrier', 'Déconnexion'].map((text, index) => (
+          <Link to={text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/'} style={{ textDecoration: 'none', color: 'inherit', marginBottom: '8px' }} key={text}>
+            <ListItem
+              button
+              sx={{
+                bgcolor: selectedItem === (text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/') ? '#4B5320' : 'background.paper',
+              }}
+              onClick={() => handleItemClick(text)}
+              style={{ marginBottom: '15px' }} 
+            >
+              <ListItemIcon sx={{ color: selectedItem === (text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/') ? 'primary.contrastText' : 'inherit' }}>
+                {text === 'Tableau de bord' && <DashboardIcon />}
+                {text === 'Tireurs' && <PeopleAltIcon />}
+                {text === 'Organisation des tirs' && <EventIcon />}
+                {text === 'Calendrier' && <EventIcon />}
+                {text === 'Déconnexion' && <LogoutIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} sx={{ color: selectedItem === (text === 'Tableau de bord' ? '/dashboard' : text === 'Tireurs' ? '/tireurs' : text === 'Organisation des tirs' ? '/organisation-tirs' : text === 'Calendrier' ? '/Calendrier' : '/') ? 'primary.contrastText' : 'inherit' }} />
+            </ListItem>
+          </Link>
+        ))}
+      </List>
     </Box>
   );
 }
