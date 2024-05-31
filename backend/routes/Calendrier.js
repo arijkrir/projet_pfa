@@ -5,13 +5,13 @@ const Seance = require('../models/Seance');
 // Route POST pour ajouter une séance
 router.post('/', async (req, res) => {
   try {
-    const { type, groups, startTime, endTime, date } = req.body; // Ajoutez 'date' au destructuring
+    const { type, groups, startTime, endTime, date } = req.body; 
     const newSeance = new Seance({
       type,
       groups,
       startTime,
       endTime,
-      date // Ajoutez 'date' à l'objet Seance
+      date 
     });
     const seance = await newSeance.save();
     res.status(201).json(seance);

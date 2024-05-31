@@ -30,7 +30,6 @@ import { Add as AddIcon } from '@mui/icons-material';
 import Navbar from '../components/navbar';
 import Sidebar from '../components/sidebar';
 
-// Définition du thème vert militaire
 const theme = createTheme({
   palette: {
     primary: {

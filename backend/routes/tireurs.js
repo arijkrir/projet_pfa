@@ -41,11 +41,15 @@ router.delete('/supprimer/:id', async (req, res) => {
   }
 });
 
-// Route pour modifier un tireur
 router.put('/modifier/:id', async (req, res) => {
-  const { nom, prenom, grade } = req.body;
+  const { nom, prenom, grade, nombreTirs } = req.body;  
   try {
-    const tireur = await Tireur.findByIdAndUpdate(req.params.id, { nom, prenom, grade,nombreTirs }, { new: true });
+    const updateFields = { nom, prenom, grade };
+    if (nombreTirs !== undefined) {
+      updateFields.nombreTirs = nombreTirs;
+    }
+
+    const tireur = await Tireur.findByIdAndUpdate(req.params.id, updateFields, { new: true });
     if (!tireur) {
       return res.status(404).json({ message: 'Tireur non trouvé' });
     }
@@ -55,5 +59,6 @@ router.put('/modifier/:id', async (req, res) => {
     res.status(500).json({ message: 'Erreur lors de la modification du tireur' });
   }
 });
+
 
 module.exports = router;

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Paper, Table, TableBody, TableCell, InputLabel, TableContainer, TableHead, TableRow, TextField, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, FormControl, ThemeProvider } from '@mui/material';
+import { 
+  Button, Modal, Paper, Table, TableBody, TableCell, InputLabel, TableContainer, 
+  TableHead, TableRow, TextField, IconButton, Dialog, DialogTitle, DialogContent, 
+  DialogActions, Select, MenuItem, FormControl, ThemeProvider 
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'; 
 import EditIcon from '@mui/icons-material/Edit';
 import Navbar from '../components/navbar';
@@ -9,6 +13,9 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
+      main: '#4B5320', 
+    },
+    secondary: {
       main: '#4B5320', 
     },
   },
@@ -77,7 +84,6 @@ const TireursPage = () => {
       }
     }
   };
-  
 
   const openEditDialog = (tireur) => {
     setEditTireur(tireur);
@@ -116,7 +122,6 @@ const TireursPage = () => {
       }
     }
   };
-  
 
   const ajouterTireur = async () => {
     if (nouveauNom && nouveauPrenom && nouveauGrade) {
@@ -184,7 +189,7 @@ const TireursPage = () => {
             <span style={{ marginLeft: 'auto' }}>
               <Button 
                 onClick={toggleModal} 
-                style={{ backgroundColor: '#4B5320', color: 'white' }} 
+                color="primary" 
                 variant="contained"
               >
                 Ajouter un tireur
@@ -193,7 +198,7 @@ const TireursPage = () => {
           </div>
 
           <Modal open={isOpen} onClose={toggleModal}>
-            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px' , color:"#4B5320"}}>
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', color: '#4B5320' }}>
               <h2>Ajouter un tireur</h2>
               <TextField 
                 label="Nom" 
@@ -242,20 +247,19 @@ const TireursPage = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-  {filteredTireurs.map((tireur) => (
-    <TableRow key={tireur._id}>
-      <TableCell>{tireur.nom}</TableCell>
-      <TableCell>{tireur.prenom}</TableCell>
-      <TableCell>{tireur.grade}</TableCell>
-      <TableCell>{tireur.nombreTirs}</TableCell>
-      <TableCell>
-        <IconButton onClick={() => openEditDialog(tireur)}><EditIcon /></IconButton>
-        <IconButton onClick={() => openDeleteDialog(tireur._id)}><DeleteIcon /></IconButton>
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-
+                {filteredTireurs.map((tireur) => (
+                  <TableRow key={tireur._id}>
+                    <TableCell>{tireur.nom}</TableCell>
+                    <TableCell>{tireur.prenom}</TableCell>
+                    <TableCell>{tireur.grade}</TableCell>
+                    <TableCell>{tireur.nombreTirs}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => openEditDialog(tireur)}><EditIcon color="primary" /></IconButton>
+                      <IconButton onClick={() => openDeleteDialog(tireur._id)}><DeleteIcon color="secondary" /></IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
             </Table>
           </TableContainer>
 
@@ -269,52 +273,51 @@ const TireursPage = () => {
           </Dialog>
 
           <Dialog open={editDialogOpen} onClose={closeEditDialog}>
-  <DialogTitle>Modifier le tireur</DialogTitle>
-  <DialogContent>
-    <TextField
-      label="Nom"
-      value={editTireur?.nom || ''}
-      onChange={(e) => setEditTireur({ ...editTireur, nom: e.target.value })}
-      fullWidth
-      required
-      style={{ marginBottom: '10px' }}
-    />
-    <TextField
-      label="Prénom"
-      value={editTireur?.prenom || ''}
-      onChange={(e) => setEditTireur({ ...editTireur, prenom: e.target.value })}
-      fullWidth
-      required
-      style={{ marginBottom: '10px' }}
-    />
-    <Select
-      label="Grade"
-      value={editTireur?.grade || ''}
-      onChange={(e) => setEditTireur({ ...editTireur, grade: e.target.value })}
-      fullWidth
-      required
-      style={{ marginBottom: '20px' }}
-    >
-      {grades.map((grade, index) => (
-        <MenuItem key={index} value={grade}>{grade}</MenuItem>
-      ))}
-    </Select>
-    <TextField
-  label="Nombre de tirs"
-  value={editTireur?.nombreTirs || ''}
-  onChange={(e) => setEditTireur({ ...editTireur, nombreTirs: e.target.value })}
-  fullWidth
-  required
-  type="number" 
-  style={{ marginBottom: '10px' }}
-/>
-
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={closeEditDialog} color="primary">Annuler</Button>
-    <Button onClick={confirmEditTireur} color="secondary">Modifier</Button>
-  </DialogActions>
-</Dialog>
+            <DialogTitle>Modifier le tireur</DialogTitle>
+            <DialogContent>
+              <TextField
+                label="Nom"
+                value={editTireur?.nom || ''}
+                onChange={(e) => setEditTireur({ ...editTireur, nom: e.target.value })}
+                fullWidth
+                required
+                style={{ marginBottom: '10px' }}
+              />
+              <TextField
+                label="Prénom"
+                value={editTireur?.prenom || ''}
+                onChange={(e) => setEditTireur({ ...editTireur, prenom: e.target.value })}
+                fullWidth
+                required
+                style={{ marginBottom: '10px' }}
+              />
+              <Select
+                label="Grade"
+                value={editTireur?.grade || ''}
+                onChange={(e) => setEditTireur({ ...editTireur, grade: e.target.value })}
+                fullWidth
+                required
+                style={{ marginBottom: '20px' }}
+              >
+                {grades.map((grade, index) => (
+                  <MenuItem key={index} value={grade}>{grade}</MenuItem>
+                ))}
+              </Select>
+              <TextField
+                label="Nombre de tirs"
+                value={editTireur?.nombreTirs || ''}
+                onChange={(e) => setEditTireur({ ...editTireur, nombreTirs: e.target.value })}
+                fullWidth
+                required
+                type="number"
+                style={{ marginBottom: '10px' }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={closeEditDialog} color="primary">Annuler</Button>
+              <Button onClick={confirmEditTireur} color="secondary">Modifier</Button>
+            </DialogActions>
+          </Dialog>
 
         </div>
       </div>

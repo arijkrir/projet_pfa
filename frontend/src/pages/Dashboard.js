@@ -9,20 +9,31 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Avatar, IconButton, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import AddIcon from '@mui/icons-material/Add';
 import Navbar from '../components/navbar';
 import Sidebar from '../components/sidebar';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4B5320', 
+    },
+    secondary: {
+      main: '#4B5320', 
+    },
+  },
+});
 
 const initialAbsentTireurs = [
   { image: 'url_de_l_image', firstName: 'ali', lastName: 'mabrouk', groupe: 1 },
-  { image: 'url_de_l_image', firstName: 'Ahmed', lastName: 'Maalel', groupe: 2 },
+  { image: 'url_de_l_image', firstName: 'Ahmed', lastName: 'Youssef', groupe: 2 },
 ];
 
 function TireursTable({ tireurs }) {
   return (
     <TableContainer component={Paper}>
-        
       <Table aria-label="tireurs table">
         <TableHead>
           <TableRow>
@@ -71,7 +82,6 @@ function Dashboard() {
   };
 
   const handleConfirmAddTireur = () => {
-    // Récupérer les valeurs des champs de la popup
     const name = document.getElementById('name').value;
     const lastName = document.getElementById('lastName').value;
     const groupe = document.getElementById('groupe').value;
@@ -92,75 +102,71 @@ function Dashboard() {
   };
 
   return (
-  <Box>
-    <Navbar/>
-    <Sidebar/>
-    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, p: 3, marginLeft: '240px',marginTop:'-10px' }} onSidebarClick={handleSidebarClick}>
-      {/* Charts */}
-      <Box sx={{ width: '60%', mr: 2 }}>
-        {/* Pie Chart */}
-        <Card sx={{ mb: 2 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 9.5 }}>
-              Total Groups and Tireurs
-            </Typography>
-            <ResponsiveContainer width="100%" height={150}>
-              <PieChart>
-                <Pie
-                  dataKey="value"
-                  data={dataPieChart}
-                  outerRadius={50}
-                  fill="#8884d8"
-                  label
-                >
-                  {dataPieChart.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={`#${Math.floor(Math.random() * 16777215).toString(16)}`} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+    <ThemeProvider theme={theme}>
+      <Box>
+        <Navbar />
+        <Sidebar />
+        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, p: 3, marginLeft: '240px', marginTop: '-10px' }} onSidebarClick={handleSidebarClick}>
+          <Box sx={{ width: '60%', mr: 2 }}>
+            <Card sx={{ mb: 2 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 9.5 }}>
+                  Total Groups and Tireurs
+                </Typography>
+                <ResponsiveContainer width="100%" height={150}>
+                  <PieChart>
+                    <Pie
+                      dataKey="value"
+                      data={dataPieChart}
+                      outerRadius={50}
+                      fill="#4B5320"
+                      label
+                    >
+                      {dataPieChart.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={`#${Math.floor(Math.random() * 16777215).toString(16)}`} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </Box>
 
+          <Box sx={{ width: '60%' }}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    List of Absent Tireurs
+                  </Typography>
+                  <IconButton onClick={handleOpenPopup}>
+                    <AddIcon color="primary" />
+                  </IconButton>
+                </Box>
+                <TireursTable tireurs={absentTireurs} />
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Dialog open={openPopup} onClose={handleClosePopup}>
+            <DialogTitle>Add Absent Tireur</DialogTitle>
+            <DialogContent>
+              <TextField autoFocus margin="dense" id="name" label="Name" fullWidth />
+              <TextField margin="dense" id="lastName" label="Last Name" fullWidth />
+              <TextField margin="dense" id="groupe" label="Groupe" type="number" fullWidth />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClosePopup} color="primary">Cancel</Button>
+              <Button onClick={handleConfirmAddTireur} color="primary">Confirm</Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
       </Box>
-
-      {/* List of Absent Tireurs */}
-      <Box sx={{ width: '60%' }}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                List of Absent Tireurs
-              </Typography>
-              <IconButton onClick={handleOpenPopup}>
-                <AddIcon />
-              </IconButton>
-            </Box>
-            <TireursTable tireurs={absentTireurs} />
-          </CardContent>
-        </Card>
-      </Box>
-
-      {/* Popup for Adding a Tireur */}
-      <Dialog open={openPopup} onClose={handleClosePopup}>
-        <DialogTitle>Add Absent Tireur</DialogTitle>
-        <DialogContent>
-          <TextField autoFocus margin="dense" id="name" label="Name" fullWidth />
-          <TextField margin="dense" id="lastName" label="Last Name" fullWidth />
-          <TextField margin="dense" id="groupe" label="Groupe" type="number" fullWidth />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClosePopup}>Cancel</Button>
-          <Button onClick={handleConfirmAddTireur}>Confirm</Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
-    </Box>
+    </ThemeProvider>
   );
 }
 
-// Données pour les charts
 const dataPieChart = [
   { name: 'Groups', value: 4 },
   { name: 'Tireurs', value: 150 },
